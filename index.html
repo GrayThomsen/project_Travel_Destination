@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="da">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
 </head>
+
 <body>
     <header class="site-header">
         <a class="brand" href="#home" aria-label="Roamlog forside">
@@ -19,7 +21,8 @@
             <a href="#journal">Rejsedagbog</a>
             <a href="#about">Om projektet</a>
         </nav>
-        <button class="button button-quiet" commandfor="login-dialog" command="show-modal">Log ind <span aria-hidden="true">↗</span></button>
+        <button class="button button-quiet" commandfor="login-dialog" command="show-modal">Log ind <span
+                aria-hidden="true">↗</span></button>
     </header>
 
     <main id="home">
@@ -27,8 +30,10 @@
             <div class="hero-copy">
                 <p class="eyebrow"><span class="eyebrow-line"></span> Personlig rejsedagbog</p>
                 <h1 id="page-title">Steder, der bliver<br><em>hos dig.</em></h1>
-                <p class="hero-intro">Saml dine rejser, gem minderne og få overblik over de destinationer, du allerede har oplevet.</p>
-                <a class="button button-primary" href="#new-destination">Tilføj destination <span aria-hidden="true">＋</span></a>
+                <p class="hero-intro">Saml dine rejser, gem minderne og få overblik over de destinationer, du allerede
+                    har oplevet.</p>
+                <a class="button button-primary" href="#new-destination">Tilføj destination <span
+                        aria-hidden="true">＋</span></a>
             </div>
             <aside class="hero-note" aria-label="Rejsecitat">
                 <span class="quote-mark" aria-hidden="true">“</span>
@@ -46,8 +51,12 @@
 
         <section class="destination-section shell" id="destinations" aria-labelledby="destination-heading">
             <div class="section-heading">
-                <div><p class="eyebrow">Dine minder</p><h2 id="destination-heading">Seneste destinationer</h2></div>
-                <label class="search-field"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Søg destination" aria-label="Søg destinationer"></label>
+                <div>
+                    <p class="eyebrow">Dine minder</p>
+                    <h2 id="destination-heading">Seneste destinationer</h2>
+                </div>
+                <label class="search-field"><span aria-hidden="true">⌕</span><input id="search-input" type="search"
+                        placeholder="Søg destination" aria-label="Søg destinationer"></label>
             </div>
             <div class="destination-grid" id="destination-list"></div>
         </section>
@@ -63,14 +72,21 @@
         </section>
 
         <section class="form-section shell" id="new-destination" aria-labelledby="form-heading" tabindex="-1">
-            <div><p class="eyebrow">Tilføj til samlingen</p><h2 id="form-heading">Ny destination</h2><p>Start med det vigtigste. Du kan altid redigere rejsen senere.</p></div>
+            <div>
+                <p class="eyebrow">Tilføj til samlingen</p>
+                <h2 id="form-heading">Ny destination</h2>
+                <p>Start med det vigtigste. Du kan altid redigere rejsen senere.</p>
+            </div>
             <form id="destination-form" class="destination-form">
-                <label>Navn på destination<input name="title" type="text" placeholder="F.eks. Kyoto" required minlength="2"></label>
+                <label>Navn på destination<input name="title" type="text" placeholder="F.eks. Kyoto" required
+                        minlength="2"></label>
                 <label>Land<input name="country" type="text" placeholder="F.eks. Japan" required></label>
                 <label>Fra<input name="from" type="date" required></label>
                 <label>Til<input name="to" type="date" required></label>
-                <label class="full-width">Din beskrivelse<textarea name="description" rows="3" placeholder="Hvad husker du bedst?" required></textarea></label>
-                <button class="button button-primary" type="submit">Gem destination <span aria-hidden="true">＋</span></button>
+                <label class="full-width">Din beskrivelse<textarea name="description" rows="3"
+                        placeholder="Hvad husker du bedst?" required></textarea></label>
+                <button class="button button-primary" type="submit">Gem destination <span
+                        aria-hidden="true">＋</span></button>
                 <p class="form-status" id="form-status" role="status" aria-live="polite" aria-atomic="true"></p>
             </form>
         </section>
@@ -81,12 +97,15 @@
     <dialog id="login-dialog" class="login-dialog">
         <form method="dialog" class="dialog-content" id="login-form">
             <button class="dialog-close" value="cancel" aria-label="Luk login">×</button>
-            <p class="eyebrow">Velkommen tilbage</p><h2>Log ind på roamlog.</h2>
+            <p class="eyebrow">Velkommen tilbage</p>
+            <h2>Log ind på roamlog.</h2>
             <label>E-mail<input type="email" placeholder="dig@eksempel.dk" required></label>
             <label>Adgangskode<input type="password" placeholder="••••••••" required minlength="6"></label>
-            <button class="button button-primary" value="default" type="submit">Log ind <span aria-hidden="true">↗</span></button>
+            <button class="button button-primary" value="default" type="submit">Log ind <span
+                    aria-hidden="true">↗</span></button>
             <p class="dialog-note">Demo-funktion indtil backend og brugerlogin er tilsluttet.</p>
         </form>
     </dialog>
 </body>
+
 </html>
