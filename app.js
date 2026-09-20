@@ -31,11 +31,17 @@ const searchInput = document.querySelector("#search-input");
 const form = document.querySelector("#destination-form");
 const status = document.querySelector("#form-status");
 const loginForm = document.querySelector("#login-form");
+const loginDialog = document.querySelector("#login-dialog");
+const addDestinationLink = document.querySelector("#add-destination-link");
 let isAuthenticated = false;
 
 document.querySelectorAll('a[href="#new-destination"]').forEach((link) => {
   link.addEventListener("click", (event) => {
     event.preventDefault();
+    if (!isAuthenticated) {
+      loginDialog.showModal();
+      return;
+    }
     const destinationSection = document.querySelector("#new-destination");
     window.history.pushState({}, "", "#new-destination");
     destinationSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -46,6 +52,12 @@ document.querySelectorAll('a[href="#new-destination"]').forEach((link) => {
 });
 
 function renderDestinations(items = destinations) {
+  if (!isAuthenticated) {
+    list.innerHTML = "<p>Log ind for at se dine destinationer.</p>";
+    count.textContent = "00";
+    return;
+  }
+
   list.innerHTML = items.length
     ? items
         .map(
@@ -72,6 +84,25 @@ searchInput.addEventListener("input", (event) => {
     ),
   );
 });
+
+function updateAuthenticationState() {
+  const formControls = form.querySelectorAll("input, textarea, button");
+  formControls.forEach((control) => {
+    control.disabled = !isAuthenticated;
+  });
+  searchInput.disabled = !isAuthenticated;
+  form.classList.toggle("is-locked", !isAuthenticated);
+  document.querySelectorAll("[data-auth-only]").forEach((section) => {
+    section.hidden = !isAuthenticated;
+  });
+  addDestinationLink.firstChild.textContent = isAuthenticated
+    ? "Tilføj destination "
+    : "Log ind ";
+  status.textContent = isAuthenticated
+    ? ""
+    : "Log ind for at oprette en destination.";
+  renderDestinations();
+}
 
 list.addEventListener("click", (event) => {
   const button = event.target.closest("button");
@@ -134,7 +165,11 @@ form.addEventListener("input", (event) => {
 
 loginForm.addEventListener("submit", () => {
   isAuthenticated = true;
-  renderDestinations();
+  updateAuthenticationState();
 });
 
-renderDestinations();
+loginDialog.addEventListener("click", (event) => {
+  if (event.target === loginDialog) loginDialog.close();
+});
+
+updateAuthenticationState();

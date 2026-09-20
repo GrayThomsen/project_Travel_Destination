@@ -13,7 +13,7 @@
 <body>
     <header class="site-header">
         <a class="brand" href="#home" aria-label="Roamlog forside">
-            <span class="brand-mark" aria-hidden="true">R</span>
+            <span class="brand-mark" aria-hidden="true"></span>
             <span>roamlog<span class="brand-dot">.</span></span>
         </a>
         <nav aria-label="Hovedmenu">
@@ -32,7 +32,7 @@
                 <h1 id="page-title">Steder, der bliver<br><em>hos dig.</em></h1>
                 <p class="hero-intro">Saml dine rejser, gem minderne og få overblik over de destinationer, du allerede
                     har oplevet.</p>
-                <a class="button button-primary" href="#new-destination">Tilføj destination <span
+                <a class="button button-primary" id="add-destination-link" href="#new-destination">Tilføj destination <span
                         aria-hidden="true">＋</span></a>
             </div>
             <aside class="hero-note" aria-label="Rejsecitat">
@@ -42,14 +42,14 @@
             </aside>
         </section>
 
-        <section class="stats shell" aria-label="Rejsestatistik">
+        <section class="stats shell" aria-label="Rejsestatistik" data-auth-only>
             <div><strong id="destination-count">03</strong><span>destinationer</span></div>
             <div><strong>02</strong><span>kontinenter</span></div>
             <div><strong>14</strong><span>rejsedage</span></div>
             <p class="stats-caption">Din samling vokser<br><em>én rejse ad gangen.</em></p>
         </section>
 
-        <section class="destination-section shell" id="destinations" aria-labelledby="destination-heading">
+        <section class="destination-section shell" id="destinations" aria-labelledby="destination-heading" data-auth-only>
             <div class="section-heading">
                 <div>
                     <p class="eyebrow">Dine minder</p>
@@ -61,7 +61,7 @@
             <div class="destination-grid" id="destination-list"></div>
         </section>
 
-        <section class="journal shell" id="journal" aria-labelledby="journal-heading">
+        <section class="journal shell" id="journal" aria-labelledby="journal-heading" data-auth-only>
             <div class="journal-panel">
                 <p class="eyebrow">Næste kapitel</p>
                 <h2 id="journal-heading">Hvor går turen hen?</h2>
@@ -71,7 +71,7 @@
             <div class="journal-image" role="img" aria-label="Farverig kystlinje"></div>
         </section>
 
-        <section class="form-section shell" id="new-destination" aria-labelledby="form-heading" tabindex="-1">
+        <section class="form-section shell" id="new-destination" aria-labelledby="form-heading" tabindex="-1" data-auth-only>
             <div>
                 <p class="eyebrow">Tilføj til samlingen</p>
                 <h2 id="form-heading">Ny destination</h2>
