@@ -14,7 +14,14 @@ app.use(express.static(__dirname));
 // Serveren bruger arrays, indtil PostgreSQL bliver koblet på. API-ruterne er
 // holdt adskilt fra dette data-lag, så arrays senere kan erstattes af SQL-querys.
 // Se db/schema.sql for den planlagte database-struktur.
-const users = [];
+const users = [
+  {
+    id: 1,
+    name: "Temporary User",
+    email: "user@user.dk",
+    password: "password",
+  },
+];
 const locations = [
   {
     id: 1,
@@ -48,7 +55,7 @@ const locations = [
   },
 ];
 
-let nextUserId = 1;
+let nextUserId = 2;
 let nextLocationId = 4;
 
 // -----------------------------------------------------------------------------
