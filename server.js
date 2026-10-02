@@ -1,153 +1,78 @@
-const express = require("express");
-const path = require("path");
 require("dotenv").config();
 
-const app = express();
-const port = Number(process.env.PORT) || 3000;
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const { createClient } = require("@supabase/supabase-js");
 
-app.use(express.json());
+// Nødvendigt ved brug af Supabase med service role key, da vi ikke bruger Supabase auth her
+const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
+
+//! Se her hvis du ikke har sat miljøvariablerne i .env filen
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error(
+    "SUPABASE_URL og SUPABASE_SERVICE_ROLE_KEY skal sættes i .env filen",
+  );
+}
+
+// Standard opsætning af Supabase klienten med service role key, som giver os mulighed for at indsætte brugere i databasen uden at bruge Supabase auth
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const app = express();
+
+//Express middleware til at parse JSON og URL-encoded data fra POST requests, samt til at servere statiske filer fra projektmappen
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 app.use(express.static(__dirname));
 
-// -----------------------------------------------------------------------------
-// Midlertidigt data-lag
-// -----------------------------------------------------------------------------
-// Serveren bruger arrays, indtil PostgreSQL bliver koblet på. API-ruterne er
-// holdt adskilt fra dette data-lag, så arrays senere kan erstattes af SQL-querys.
-// Se db/schema.sql for den planlagte database-struktur.
-const users = [
-  {
-    id: 1,
-    name: "Temporary User",
-    email: "user@user.dk",
-    password: "password",
-  },
-];
-const locations = [
-  {
-    id: 1,
-    userId: null,
-    title: "Amalfi Coast",
-    country: "Italy",
-    from: "2024-06-12",
-    to: "2024-06-19",
-    description: "Citronduft, små veje og havet lige under fødderne.",
-    theme: "amalfi",
-  },
-  {
-    id: 2,
-    userId: null,
-    title: "Kyoto",
-    country: "Japan",
-    from: "2023-04-04",
-    to: "2023-04-15",
-    description: "Templer, stille haver og den bedste ramen på rejsen.",
-    theme: "kyoto",
-  },
-  {
-    id: 3,
-    userId: null,
-    title: "Lisbon",
-    country: "Portugal",
-    from: "2022-08-21",
-    to: "2022-08-28",
-    description: "Gule sporvogne, varme aftener og fliser overalt.",
-    theme: "lisbon",
-  },
-];
+// Endpoint til at oprette en ny bruger
+app.post("/api/users", async (req, res) => {
+  const { username, password } = req.body;
 
-let nextUserId = 2;
-let nextLocationId = 4;
-
-// -----------------------------------------------------------------------------
-// Hjælpefunktioner
-// -----------------------------------------------------------------------------
-function publicUser(user) {
-  if (!user) return null;
-
-  // Password må ikke sendes med tilbage til browseren. Det skal senere være en
-  // password_hash fra PostgreSQL og ikke en password-værdi i klartekst.
-  const { password, ...safeUser } = user;
-  return safeUser;
-}
-
-function findUserById(userId) {
-  return users.find((user) => user.id === Number(userId));
-}
-
-// -----------------------------------------------------------------------------
-// Basisruter
-// -----------------------------------------------------------------------------
-app.get("/api/health", (request, response) => {
-  response.json({ status: "ok", database: "not connected" });
-});
-
-// -----------------------------------------------------------------------------
-// Brugere og login
-// -----------------------------------------------------------------------------
-// Der er med vilje ingen input-validering i denne første prototype. Når
-// PostgreSQL kobles på, skal denne route have validering, password hashing og
-// unikke constraints på email.
-app.post("/api/users", (request, response) => {
-  const { name, email, password } = request.body;
-  const user = { id: nextUserId++, name, email, password };
-
-  users.push(user);
-  response.status(201).json({ user: publicUser(user) });
-});
-
-app.post("/api/login", (request, response) => {
-  const { email, password } = request.body;
-  const user = users.find(
-    (candidate) => candidate.email === email && candidate.password === password,
-  );
-
-  if (!user) {
-    return response.status(401).json({ error: "Ugyldig email eller adgangskode." });
+  // Validering af brugernavn og adgangskode, sikre at der er skrevet noget i begge felter.
+  if (typeof username !== "string" || typeof password !== "string") {
+    return res.status(400).send("Brugernavn og adgangskode er påkrævet.");
+  }
+  // Trim whitespace og tjek længde på brugernavn.
+  const normalizedUsername = username.trim();
+  if (normalizedUsername.length < 3 || normalizedUsername.length > 50) {
+    return res.status(400).send("Brugernavn skal være mellem 3 og 50 tegn.");
   }
 
-  // Senere skal dette erstattes af en session eller JWT-token.
-  response.json({ user: publicUser(user) });
+  // Tjek længde på adgangskode, både minimum og maksimum bytes. Grunden til bytes er, at bcrypt kun kan håndtere adgangskoder op til 72 bytes. Hvis adgangskoden er længere, vil bcrypt ignorere de ekstra bytes, hvilket kan føre til sikkerhedsproblemer.
+  if (password.length < 8 || Buffer.byteLength(password, "utf8") > 72) {
+    return res
+      .status(400)
+      .send("Adgangskoden skal være mindst 8 tegn og højst 72 bytes.");
+  }
+
+  try {
+    const passwordHash = await bcrypt.hash(password, 12);
+    const { error } = await supabase.from("users").insert({
+      username: normalizedUsername,
+      password_hash: passwordHash,
+    });
+
+    //Error code 23505 er en PostgreSQL fejl, der indikerer, at der er et unikt nøglekonflikt. I dette tilfælde betyder det, at brugernavnet allerede findes i databasen. Dette er noget vi håndterer, så brugeren får en venlig besked i stedet for en generisk serverfejl. Det er afhænigt at den service man bruger, hvilken kode man får tilbage, men for Supabase/PostgreSQL er det 23505. Hvis man bruger en anden database, kan det være en anden kode, og man skal derfor tjekke dokumentationen for den pågældende database.
+    if (error?.code === "23505") {
+      return res.status(409).send("Brugernavnet er allerede i brug.");
+    }
+    if (error) throw error;
+
+    return (
+      res
+        .status(201)
+        //Her sender vi en HTML besked tilbage til klienten, som viser at brugeren er oprettet, og giver et link til forsiden. Dette er en simpel måde at give feedback til brugeren på, men i en rigtig applikation vil man typisk redirecte brugeren til login siden eller forsiden efter oprettelse.
+        .send(
+          'Brugeren er oprettet. <a href="/index.html">Gå til forsiden</a>.',
+        )
+    );
+  } catch (error) {
+    console.error("Kunne ikke oprette bruger:", error.message);
+    return res.status(500).send("Brugeren kunne ikke oprettes lige nu.");
+  }
 });
 
-// -----------------------------------------------------------------------------
-// Locations
-// -----------------------------------------------------------------------------
-app.get("/api/users/:userId/locations", (request, response) => {
-  const user = findUserById(request.params.userId);
-  if (!user) return response.status(404).json({ error: "Brugeren findes ikke." });
-
-  const userLocations = locations.filter(
-    (location) => location.userId === user.id,
-  );
-  response.json({ locations: userLocations });
-});
-
-app.post("/api/users/:userId/locations", (request, response) => {
-  const user = findUserById(request.params.userId);
-  if (!user) return response.status(404).json({ error: "Brugeren findes ikke." });
-
-  const { title, country, from, to, description, theme = "" } = request.body;
-  const location = {
-    id: nextLocationId++,
-    userId: user.id,
-    title,
-    country,
-    from,
-    to,
-    description,
-    theme,
-  };
-
-  locations.push(location);
-  response.status(201).json({ location });
-});
-
-// Frontend fallback: gør det muligt at åbne forsiden via http://localhost:3000.
-app.get("*", (request, response) => {
-  response.sendFile(path.join(__dirname, "index.html"));
-});
-
+// Start serveren på den port, der er angivet i miljøvariablerne, eller standardporten 3000
+const port = Number(process.env.PORT) || 3000;
 app.listen(port, () => {
-  console.log(`Roamlog server kører på http://localhost:${port}`);
-  console.log("PostgreSQL er ikke tilsluttet endnu. Se db/schema.sql.");
+  console.log(`Serveren kører på http://localhost:${port}`);
 });

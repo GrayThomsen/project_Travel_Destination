@@ -12,31 +12,47 @@
     <h1>Kodefolkets Rejsebureau</h1>
     <p>Her kan du gemme og få et overblik over dine tidligere og fremtidige rejsedestinationer.</p>
 
+    <article>
+        <form>
+            <label aria-label="Brugernavn" for="username">Brugernavn:</label>
+            <input id="username" type="text" name="username" required>
+            <label aria-label="Kodeord" for="password">Kodeord:</label>
+            <input type="password" id="password" name="password" required>
+            <textarea aria-label="Beskrivelse" id="description" name="description" placeholder="Beskrivelse af rejsen"
+                required></textarea>
+            <button aria-label="Log ind" type="submit">Log ind</button>
+        </form>
+        <p>Hvis du ikke har en bruger, kan du <a href="opret-bruger.html">oprette en</a>.</p>
+    </article>
 
-    <form>
-        <label aria-label="Brugernavn" for="username">Brugernavn:</label>
-        <input id="username" type="text" name="username" required>
-        <label aria-label="Kodeord" for="password">Kodeord:</label>
-        <input type="password" id="password" name="password" required>
-        <button aria-label="Log ind" type="submit">Log ind</button>
-    </form>
+    <article id="rejseoversigt" style="display: none;">
+        <form>
 
-    <form>
+            <label aria-label="Destination" for="destination">Destination:</label>
+            <input id="destination" type="text" name="destination" required>
+            <label aria-label="Rejseperiode fra" for="Fra">Rejseperiode fra:</label>
+            <input type="date" id="Fra" name="Fra" required>
+            <label aria-label="Rejseperiode til" for="Til">Rejseperiode til:</label>
+            <input type="date" id="Til" name="Til" required>
 
-        <label aria-label="Destination" for="destination">Destination:</label>
-        <input id="destination" type="text" name="destination" required>
-        <label aria-label="Rejseperiode fra" for="Fra">Rejseperiode fra:</label>
-        <input type="date" id="Fra" name="Fra" required>
-        <label aria-label="Rejseperiode til" for="Til">Rejseperiode til:</label>
-        <input type="date" id="Til" name="Til" required>
-
-        <button aria-label="Gem" type="submit">Gem</button>
+            <button aria-label="Gem" type="submit">Gem</button>
 
 
-    </form>
+        </form>
 
+        <section>
+            <h2>Mine Rejsedestinationer</h2>
+            <template id="rejse-template">
+                <div class="rejse">
+                    <h3 class="rejse-destination"></h3>
+                    <p class="rejse-periode"></p>
+                    <p class="rejse-beskrivelse"></p>
+                </div>
 
-    
+        </section>
+
+    </article>
+
 </body>
 
 </html>

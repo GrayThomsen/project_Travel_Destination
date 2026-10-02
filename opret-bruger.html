@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opret Bruger</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Opret Bruger</h1>
+    <p>Her kan du oprette en ny bruger til Kodefolkets Rejsebureau.</p>
+
+<!-- formen bruge action="/api/users" som man kan se i server.js -->
+    <form action="/api/users" method="post">
+        <label aria-label="Brugernavn" for="username">Brugernavn:</label>
+        <input id="username" type="text" name="username" required>
+        <label aria-label="Kodeord" for="password">Kodeord:</label>
+        <input type="password" id="password" name="password" minlength="8" required>
+        <button aria-label="Opret bruger" type="submit">Opret bruger</button>
+    </form>
+
+    <p>Hvis du allerede har en bruger, kan du <a href="index.html">logge ind her</a>.</p>
+</body>
+</html>
