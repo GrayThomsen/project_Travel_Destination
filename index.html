@@ -6,53 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kodefolkets Rejsebureau</title>
     <link rel="stylesheet" href="style.css">
+    <script src="scripts/logget-ind.js" defer></script>
 </head>
 
 <body>
     <h1>Kodefolkets Rejsebureau</h1>
     <p>Her kan du gemme og få et overblik over dine tidligere og fremtidige rejsedestinationer.</p>
 
-    <article>
-        <form>
+    <article id="login-section">
+        <form id="login-form" action="/api/login" method="post">
             <label aria-label="Brugernavn" for="username">Brugernavn:</label>
-            <input id="username" type="text" name="username" required>
+            <input id="username" type="text" name="username" autocomplete="username" required>
             <label aria-label="Kodeord" for="password">Kodeord:</label>
-            <input type="password" id="password" name="password" required>
-            <textarea aria-label="Beskrivelse" id="description" name="description" placeholder="Beskrivelse af rejsen"
-                required></textarea>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
             <button aria-label="Log ind" type="submit">Log ind</button>
         </form>
+        <p id="login-message" role="status" aria-live="polite"></p>
         <p>Hvis du ikke har en bruger, kan du <a href="opret-bruger.html">oprette en</a>.</p>
     </article>
 
-    <article id="rejseoversigt" style="display: none;">
-        <form>
+    <article id="rejseoversigt" hidden>
+        <p id="logged-in-message"></p>
+        <button id="logout-button" type="button">Log ud</button>
+        <form id="travel-form">
 
             <label aria-label="Destination" for="destination">Destination:</label>
-            <input id="destination" type="text" name="destination" required>
-            <label aria-label="Rejseperiode fra" for="Fra">Rejseperiode fra:</label>
-            <input type="date" id="Fra" name="Fra" required>
-            <label aria-label="Rejseperiode til" for="Til">Rejseperiode til:</label>
-            <input type="date" id="Til" name="Til" required>
+            <input id="destination" type="text" name="location" required>
+            <label aria-label="Rejseperiode fra" for="travel-time-from">Rejseperiode fra:</label>
+            <input type="date" id="travel-time-from" name="travel_time_from" required>
+            <label aria-label="Rejseperiode til" for="travel-time-to">Rejseperiode til:</label>
+            <input type="date" id="travel-time-to" name="travel_time_to" required>
+            <label for="travel-description">Beskrivelse:</label>
+            <textarea id="travel-description" name="description" required></textarea>
 
             <button aria-label="Gem" type="submit">Gem</button>
 
 
         </form>
+        <p id="travel-message" role="status" aria-live="polite"></p>
 
-        <section>
+        <section id="travel-list">
             <h2>Mine Rejsedestinationer</h2>
             <template id="rejse-template">
                 <div class="rejse">
                     <h3 class="rejse-destination"></h3>
                     <p class="rejse-periode"></p>
                     <p class="rejse-beskrivelse"></p>
+                    <button type="button" class="rejse-slet">Slet</button>
                 </div>
+            </template>
+            <p id="empty-travel-message">Du har ikke oprettet nogen rejser endnu.</p>
 
         </section>
 
     </article>
 
+    <script src="scripts/Opret-Rejse.js" defer></script>
+    <script src="scripts/Mine-Rejsedestinationer.js" defer></script>
+    <script src="scripts/slet-rejsedestination.js" defer></script>
 </body>
 
 </html>
