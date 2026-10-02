@@ -114,7 +114,7 @@ app.get("/api/travel-destinations", async (req, res) => {
         "id, location, travel_time_from, travel_time_to, description, created_at",
       )
       .eq("user_id", req.session.userId)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: true });
 
     if (error) throw error;
     return res.json({ destinations: data });

@@ -4,18 +4,26 @@ const travelList = document.querySelector("#travel-list");
 const travelTemplate = document.querySelector("#rejse-template");
 const emptyTravelMessage = document.querySelector("#empty-travel-message");
 
-//Funktionen addTravelCard opretter et nyt rejsekort baseret på destinationen og tilføjer det til listen over rejser.
+function formatTravelDate(dateValue) {
+  return new Date(`${dateValue}T00:00:00`).toLocaleDateString("da-DK", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+// Opretter et kort og placerer det øverst over de eksisterende rejser.
 function addTravelCard(destination) {
   const travelCard = travelTemplate.content.firstElementChild.cloneNode(true);
   travelCard.dataset.destinationId = destination.id;
   travelCard.querySelector(".rejse-destination").textContent =
     destination.location;
   travelCard.querySelector(".rejse-periode").textContent =
-    `${destination.travel_time_from} til ${destination.travel_time_to}`;
+    `${formatTravelDate(destination.travel_time_from)} til ${formatTravelDate(destination.travel_time_to)}`;
   travelCard.querySelector(".rejse-beskrivelse").textContent =
     destination.description;
-  //append tilføjer det nye rejsekort til listen over rejser, baggerst i rækken.
-  travelList.append(travelCard);
+  const firstTravelCard = travelList.querySelector(".rejse");
+  travelList.insertBefore(travelCard, firstTravelCard || emptyTravelMessage);
 }
 
 //Funktionen loadTravels henter rejserne fra serveren og opdaterer listen over rejser på siden. Hvis der ikke er nogen rejser, vises en besked om, at der ikke er nogen rejser.

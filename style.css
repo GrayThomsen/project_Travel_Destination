@@ -70,3 +70,37 @@ button {
 button:hover {
 	background: var(--color-accent-hover);
 }
+
+.rejse {
+	display: grid;
+	gap: 6px;
+	max-width: 420px;
+	margin-block: 16px;
+	padding: 16px;
+	border: 1px solid var(--color-border-subtle);
+	border-radius: 6px;
+	background: var(--color-field);
+}
+
+.rejse h3,
+.rejse p {
+	margin: 0;
+}
+
+.rejse h3 {
+	overflow-wrap: anywhere;
+}
+
+.rejse-periode {
+	color: #5c6c75;
+	font-size: 0.95rem;
+}
+
+.rejse-slet {
+	margin-block-start: 8px;
+	background: #a23e3e;
+}
+
+.rejse-slet:hover {
+	background: #823131;
+}
