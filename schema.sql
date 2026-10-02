@@ -1,3 +1,5 @@
+
+
 create table if not exists public.users (
     id uuid primary key default gen_random_uuid(),
     username text not null unique check (char_length(username) between 3 and 50),
