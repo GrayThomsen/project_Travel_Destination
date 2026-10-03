@@ -1,3 +1,4 @@
+// Bemærk at dette script er skrevet i en IIFE (Immediately Invoked Function Expression), hvilket betyder, at det kører med det samme, når scriptet indlæses. Dette er en god praksis for at undgå globale variabler og holde koden isoleret.
 (() => {
   const travelForm = document.querySelector("#travel-form");
   const travelMessage = document.querySelector("#travel-message");
