@@ -16,6 +16,10 @@ function formatTravelDate(dateValue) {
 function addTravelCard(destination) {
   const travelCard = travelTemplate.content.firstElementChild.cloneNode(true);
   travelCard.dataset.destinationId = destination.id;
+  travelCard.dataset.location = destination.location;
+  travelCard.dataset.travelFrom = destination.travel_time_from;
+  travelCard.dataset.travelTo = destination.travel_time_to;
+  travelCard.dataset.description = destination.description;
   travelCard.querySelector(".rejse-destination").textContent =
     destination.location;
   travelCard.querySelector(".rejse-periode").textContent =
@@ -52,6 +56,33 @@ window.addEventListener("bruger-logget-ind", refreshTravels);
 
 window.addEventListener("rejsedestination-oprettet", (event) => {
   addTravelCard(event.detail);
+  emptyTravelMessage.hidden = true;
+});
+
+window.addEventListener("rejsedestination-opdateret", (event) => {
+  const updatedDestination = event.detail;
+  const existingCards = travelList.querySelectorAll(".rejse");
+  let foundCard = null;
+
+  existingCards.forEach((card) => {
+    if (card.dataset.destinationId === String(updatedDestination.id)) {
+      foundCard = card;
+    }
+  });
+
+  if (foundCard) {
+    foundCard.dataset.location = updatedDestination.location;
+    foundCard.dataset.travelFrom = updatedDestination.travel_time_from;
+    foundCard.dataset.travelTo = updatedDestination.travel_time_to;
+    foundCard.dataset.description = updatedDestination.description;
+    foundCard.querySelector(".rejse-destination").textContent = updatedDestination.location;
+    foundCard.querySelector(".rejse-periode").textContent =
+      `${formatTravelDate(updatedDestination.travel_time_from)} til ${formatTravelDate(updatedDestination.travel_time_to)}`;
+    foundCard.querySelector(".rejse-beskrivelse").textContent = updatedDestination.description;
+    return;
+  }
+
+  addTravelCard(updatedDestination);
   emptyTravelMessage.hidden = true;
 });
 })();

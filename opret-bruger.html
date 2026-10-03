@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="da">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,12 @@
     <link rel="stylesheet" href="style.css">
     <script src="/scripts/opret-bruger.js" defer></script>
 </head>
+
 <body>
     <h1>Opret Bruger</h1>
     <p>Her kan du oprette en ny bruger til Kodefolkets Rejsebureau.</p>
 
-<!-- formen bruge action="/api/users" som man kan se i server.js -->
+    <!-- formen bruge action="/api/users" som man kan se i server.js -->
     <form id="opret-bruger-form" action="/api/users" method="post">
         <label aria-label="Brugernavn" for="username">Brugernavn:</label>
         <input id="username" type="text" name="username" required>
@@ -24,4 +26,5 @@
 
     <p>Hvis du allerede har en bruger, kan du <a href="index.html">logge ind her</a>.</p>
 </body>
+
 </html>

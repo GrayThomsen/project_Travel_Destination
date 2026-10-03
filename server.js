@@ -33,11 +33,13 @@ if (!SUPABASE_URL || !supabaseSecretKey) {
 const supabase = createClient(SUPABASE_URL, supabaseSecretKey);
 const app = express();
 
-//Express middleware til at parse JSON og URL-encoded data fra POST requests, samt til at servere statiske filer fra projektmappen
+// Express middleware til at parse JSON og formdata fra frontend.
+// Uden dette ville req.body være undefined, når vi sender data fra browseren som JSON eller URL-encoded form.
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 app.use(
   session({
+    // sessionen bruges til at huske, hvilken bruger der er logget ind, uden at gemme password i browseren.
     secret: process.env.SESSION_SECRET || randomBytes(32).toString("hex"),
     resave: false,
     saveUninitialized: false,
@@ -50,7 +52,9 @@ app.use(
   }),
 );
 app.use(express.static(__dirname));
-// Endpoint til at hente session information
+
+// Det her endpoint bruges, når frontend skal verificere, om brugeren faktisk er logget ind.
+// Hvis der ikke findes en session, returnerer vi { user: null }, så login-siden kan vise korrekt state.
 app.get("/api/session", (req, res) => {
   if (!req.session.userId) {
     return res.json({ user: null });
@@ -153,7 +157,68 @@ app.delete("/api/travel-destinations/:id", async (req, res) => {
   }
 });
 
-// Endpoint til at oprette en ny rejse
+// Endpoint til at opdatere en eksisterende rejse.
+// Vi bruger PUT, fordi vi erstatter hele posten med de nye værdier, men kun for den aktuelle bruger.
+// Det er vigtigt at sikre, at en bruger ikke kan redigere nogen andres rejser, så vi bruger både id og user_id i queryen.
+app.put("/api/travel-destinations/:id", async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).send("Du skal logge ind for at redigere en rejse.");
+  }
+
+  const { id } = req.params;
+  const { location, travel_time_from, travel_time_to, description } = req.body;
+
+  if (
+    typeof location !== "string" ||
+    typeof travel_time_from !== "string" ||
+    typeof travel_time_to !== "string" ||
+    typeof description !== "string"
+  ) {
+    return res.status(400).send("Udfyld destination, datoer og beskrivelse.");
+  }
+
+  const normalizedLocation = location.trim();
+  if (!normalizedLocation || travel_time_to < travel_time_from) {
+    return res.status(400).send("Kontrollér destination og rejsedatoer.");
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("travel_destinations")
+      .update({
+        location: normalizedLocation,
+        travel_time_from,
+        travel_time_to,
+        description: description.trim(),
+      })
+      .eq("id", id)
+      .eq("user_id", req.session.userId)
+      .select(
+        "id, location, travel_time_from, travel_time_to, description, created_at",
+      )
+      .single();
+
+    if (error) {
+      // PGRST116 betyder, at der ikke blev fundet nogen række, som matcher både id og bruger.
+      if (error.code === "PGRST116") {
+        return res.status(404).send("Rejsen blev ikke fundet.");
+      }
+      throw error;
+    }
+
+    return res.json({ destination: data });
+  } catch (error) {
+    if (error.code === "22P02") {
+      return res.status(400).send("Rejsens ID er ugyldigt.");
+    }
+
+    console.error("Kunne ikke opdatere rejse:", error.message);
+    return res.status(500).send("Rejsen kunne ikke opdateres lige nu.");
+  }
+});
+
+// Endpoint til at oprette en ny rejse.
+// Her validerer vi input, før vi sender det videre til databasen, så vi undgår ugyldige eller tomme rejser.
 app.post("/api/travel-destinations", async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send("Du skal logge ind for at oprette en rejse.");

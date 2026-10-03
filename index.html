@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kodefolkets Rejsebureau</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Bemærk "defer". Dette er et tag eller attribute som betyder at resten af siden får lov at blive indlæst før scriptet. -->
     <script src="scripts/logget-ind.js" defer></script>
+    <script src="scripts/Opret-Rejse.js" defer></script>
+    <script src="scripts/Mine-Rejsedestinationer.js" defer></script>
+    <script src="scripts/slet-rejsedestination.js" defer></script>
 </head>
 
 <body>
@@ -25,11 +29,12 @@
         <p>Hvis du ikke har en bruger, kan du <a href="opret-bruger.html">oprette en</a>.</p>
     </article>
 
+    <!-- Hidden er en attribut som betyder at elementet er skjult. Det er brugt på tværs af søge-engines og derfor universelt tilgængeligt. -->
     <article id="rejseoversigt" hidden>
         <p id="logged-in-message"></p>
         <button id="logout-button" type="button">Log ud</button>
         <form id="travel-form">
-
+            <!-- Aria-labels som vi har lært med Dannie. De er gode, da det hjælper med at forklare hvad et element er til. Så vi er true allies ved at følge a11y principper. -->
             <label aria-label="Destination" for="destination">Destination:</label>
             <input id="destination" type="text" name="location" required>
             <label aria-label="Rejseperiode fra" for="travel-time-from">Rejseperiode fra:</label>
@@ -40,8 +45,7 @@
             <textarea id="travel-description" name="description" required></textarea>
 
             <button aria-label="Gem" type="submit">Gem</button>
-
-
+            <button type="button" id="cancel-edit-button" hidden>Annuller</button>
         </form>
         <p id="travel-message" role="status" aria-live="polite"></p>
 
@@ -52,6 +56,7 @@
                     <h3 class="rejse-destination"></h3>
                     <p class="rejse-periode"></p>
                     <p class="rejse-beskrivelse"></p>
+                    <button type="button" class="rejse-rediger">Rediger</button>
                     <button type="button" class="rejse-slet">Slet</button>
                 </div>
             </template>
@@ -61,9 +66,6 @@
 
     </article>
 
-    <script src="scripts/Opret-Rejse.js" defer></script>
-    <script src="scripts/Mine-Rejsedestinationer.js" defer></script>
-    <script src="scripts/slet-rejsedestination.js" defer></script>
 </body>
 
 </html>
