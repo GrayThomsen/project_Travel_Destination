@@ -1,7 +1,7 @@
 {
-  "name": "roamlog-travel-destination",
+  "name": "Kodefolkets-Rejsebureau",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "description": "Simple Node.js API for users and travel locations.",
   "main": "server.js",
   "scripts": {

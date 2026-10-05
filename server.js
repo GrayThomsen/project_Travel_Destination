@@ -148,6 +148,6 @@ app.get("*", (request, response) => {
 });
 
 app.listen(port, () => {
-  console.log(`Roamlog server kører på http://localhost:${port}`);
+  console.log(`Kodefolkets rejsebureaus server kører på http://localhost:${port}`);
   console.log("PostgreSQL er ikke tilsluttet endnu. Se db/schema.sql.");
 });
